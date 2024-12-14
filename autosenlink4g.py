@@ -52,9 +52,14 @@ def register_and_login():
                     token = login_data['data']['token']
                     subscription_link = f"https://fast4g.vn/api/v1/client/subscribe?token={token}"
                     return subscription_link
-        return "Hãy thử lại sau!"
+                else:
+                    return f"Login successful but no token found. Response: {login_data}"
+            else:
+                return f"Login failed: {login_response.status_code} - {login_response.text}"
+        else:
+            return f"Registration failed: {register_response.status_code} - {register_response.text}"
     except Exception as e:
-        return "Hãy thử lại sau!"
+        return f"An error occurred: {e}"
 
 async def send_subscription_link(context: ContextTypes.DEFAULT_TYPE):
     """Send a new subscription link to the user."""
