@@ -1,13 +1,22 @@
-#pip3 install python-telegram-bot requests pytz
-#pip install "python-telegram-bot[job-queue]"
+import os
 import random
 import string
 import requests
+from flask import Flask
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 from datetime import datetime, timedelta
 import pytz
+import threading
 
+# Flask app setup
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Hello, Render!"
+
+# Telegram bot functions
 def generate_random_email():
     """Generate a random email address."""
     domain = "gmail.com"
@@ -73,8 +82,8 @@ async def create_new_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = f"Link data 4G VPN của bạn:\n{link}"
     await update.message.reply_text(message)
 
-def main():
-    """Run the bot."""
+def run_bot():
+    """Run the Telegram bot."""
     token = "7826087010:AAFLg7oBWQenOgIlFbCbtYKKZs-QH_B663I"
     application = Application.builder().token(token).build()
 
@@ -84,5 +93,9 @@ def main():
     application.run_polling()
 
 if __name__ == "__main__":
-    main()
+    # Run Flask in a separate thread
+    port = int(os.environ.get("PORT", 443))  # Lấy cổng từ biến môi trường
+    threading.Thread(target=app.run, kwargs={"host": "0.0.0.0", "port": port, "use_reloader": False}).start()
 
+    # Run the Telegram bot
+    run_bot()
